@@ -18,7 +18,8 @@ go_library(
     importpath = "github.com/rickypai/ricky-cli",
     visibility = ["//visibility:private"],
     deps = [
-        "//vendor/gopkg.in/yaml.v2:go_default_library",
+        "//vendor/github.com/google/go-github/github:go_default_library",
+        "//vendor/golang.org/x/oauth2:go_default_library",
     ],
 )
 

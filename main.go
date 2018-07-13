@@ -1,53 +1,81 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
+	"os"
+	"os/exec"
+	"strconv"
 
-	"gopkg.in/yaml.v2"
+	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 )
 
-var data = `
-a: Easy!
-b:
-  c: 2
-  d: [3, 4]
-`
-
-type T struct {
-	A string
-	B struct {
-		RenamedC int   `yaml:"c"`
-		D        []int `yaml:",flow"`
-	}
-}
-
 func main() {
-	t := T{}
-
-	err := yaml.Unmarshal([]byte(data), &t)
-	if err != nil {
-		log.Fatalf("error: %v", err)
+	githubToken := os.Getenv("GITHUB_TOKEN")
+	if githubToken == "" {
+		panic("Need to set GITHUB_TOKEN.")
 	}
-	fmt.Printf("--- t:\n%v\n\n", t)
 
-	d, err := yaml.Marshal(&t)
-	if err != nil {
-		log.Fatalf("error: %v", err)
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: githubToken},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	client := github.NewClient(tc)
+
+	opt := github.PullRequestListOptions{
+		ListOptions: github.ListOptions{},
 	}
-	fmt.Printf("--- t dump:\n%s\n\n", string(d))
 
-	m := make(map[interface{}]interface{})
+	for i := 1; i < 20; i++ {
+		opt.ListOptions.Page = i
 
-	err = yaml.Unmarshal([]byte(data), &m)
-	if err != nil {
-		log.Fatalf("error: %v", err)
+		prs, _, err := client.PullRequests.List(ctx, "vsco", "godel", &opt)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, pr := range prs {
+			if pr.GetUser().GetLogin() != "rickypai" {
+				continue
+			}
+
+			// delete closed branches
+			if pr.GetState() == "closed" {
+				cmd := exec.Command("git", "show", pr.Head.GetRef())
+				cmd.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				_, err := cmd.Output()
+				if err != nil {
+					continue
+				}
+
+				log.Printf("deleting '%v'", pr.Head.GetRef())
+
+				cmd1 := exec.Command("git", "branch", "-D", pr.Head.GetRef())
+				cmd1.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				cmd1.Output()
+			}
+
+			if pr.GetState() == "open" {
+				cmd := exec.Command("git", "show", pr.Head.GetRef())
+				cmd.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				_, err := cmd.Output()
+				if err != nil {
+					continue
+				}
+
+				log.Printf("setting PR for '%v'", pr.Head.GetRef())
+
+				cmd1 := exec.Command("twig", "--branch", pr.Head.GetRef(), "issue", strconv.Itoa(pr.GetNumber()))
+				cmd1.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				cmd1.Output()
+
+				cmd2 := exec.Command("twig", "--branch", pr.Head.GetRef(), "diff-branch", pr.Base.GetRef())
+				cmd2.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				cmd2.Output()
+			}
+		}
 	}
-	fmt.Printf("--- m:\n%v\n\n", m)
-
-	d, err = yaml.Marshal(&m)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-	fmt.Printf("--- m dump:\n%s\n\n", string(d))
 }
