@@ -1,4 +1,4 @@
-PROJECT := golang-boilerplate
+PROJECT := ricky-cli
 
 .PHONY: default dep build run buildifier
 

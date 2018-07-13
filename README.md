@@ -1,1 +1,1 @@
-# golang-boilerplate
+# ricky-cli

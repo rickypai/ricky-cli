@@ -5,7 +5,7 @@ load("@com_github_bazelbuild_buildtools//buildifier:def.bzl", "buildifier")
 gazelle(
     name = "gazelle",
     external = "vendored",
-    prefix = "github.com/rickypai/golang-boilerplate",
+    prefix = "github.com/rickypai/ricky-cli",
 )
 
 buildifier(
@@ -15,7 +15,7 @@ buildifier(
 go_library(
     name = "go_default_library",
     srcs = ["main.go"],
-    importpath = "github.com/rickypai/golang-boilerplate",
+    importpath = "github.com/rickypai/ricky-cli",
     visibility = ["//visibility:private"],
     deps = [
         "//vendor/gopkg.in/yaml.v2:go_default_library",
@@ -23,7 +23,7 @@ go_library(
 )
 
 go_binary(
-    name = "golang-boilerplate",
+    name = "ricky-cli",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
 )
