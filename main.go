@@ -68,13 +68,17 @@ func main() {
 
 				log.Printf("setting PR for '%v'", pr.Head.GetRef())
 
-				cmd1 := exec.Command("twig", "--branch", pr.Head.GetRef(), "issue", strconv.Itoa(pr.GetNumber()))
-				cmd1.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
-				cmd1.Output()
+				cmd = exec.Command("twig", "--branch", pr.Head.GetRef(), "issue", strconv.Itoa(pr.GetNumber()))
+				err = cmd.Run()
+				if err != nil {
+					panic(err)
+				}
 
-				cmd2 := exec.Command("twig", "--branch", pr.Head.GetRef(), "diff-branch", pr.Base.GetRef())
-				cmd2.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
-				cmd2.Output()
+				cmd = exec.Command("twig", "--branch", pr.Head.GetRef(), "diff-branch", pr.Base.GetRef())
+				err = cmd.Run()
+				if err != nil {
+					panic(err)
+				}
 			}
 		}
 	}
