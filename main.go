@@ -26,6 +26,7 @@ func main() {
 	client := github.NewClient(tc)
 
 	opt := github.PullRequestListOptions{
+		State:       "all",
 		ListOptions: github.ListOptions{},
 	}
 
