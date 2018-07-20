@@ -54,9 +54,13 @@ func main() {
 
 				log.Printf("deleting '%v'", pr.Head.GetRef())
 
-				cmd1 := exec.Command("git", "branch", "-D", pr.Head.GetRef())
-				cmd1.Dir = godelDir
-				cmd1.Output()
+				execCommandDirs(
+					[]string{
+						godelDir,
+						godel2Dir,
+					},
+					"git", "branch", "-D", pr.Head.GetRef(),
+				)
 			}
 
 			if pr.GetState() == "open" {
@@ -69,16 +73,38 @@ func main() {
 
 				log.Printf("setting PR for '%v'", pr.Head.GetRef())
 
-				cmd1 := exec.Command("twig", "--branch", pr.Head.GetRef(), "issue", strconv.Itoa(pr.GetNumber()))
-				cmd1.Dir = godelDir
-				cmd1.Output()
+				execCommandDirs(
+					[]string{
+						godelDir,
+						godel2Dir,
+					},
+					"twig", "--branch", pr.Head.GetRef(), "issue", strconv.Itoa(pr.GetNumber()),
+				)
 
-				cmd2 := exec.Command("twig", "--branch", pr.Head.GetRef(), "diff-branch", pr.Base.GetRef())
-				cmd2.Dir = godelDir
-				cmd2.Output()
+				execCommandDirs(
+					[]string{
+						godelDir,
+						godel2Dir,
+					},
+					"twig", "--branch", pr.Head.GetRef(), "diff-branch", pr.Base.GetRef(),
+				)
 			}
 		}
 	}
 }
 
 const godelDir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+const godel2Dir = "/Users/ricky/workspace/src/github.com/vsco/godel2"
+
+func execCommandDirs(dirs []string, name string, arg ...string) {
+	for _, dir := range dirs {
+		execCommand(dir, name, arg...)
+	}
+}
+
+func execCommand(dir string, name string, arg ...string) error {
+	cmd := exec.Command(name, arg...)
+	cmd.Dir = dir
+	_, err := cmd.Output()
+	return err
+}
