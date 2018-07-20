@@ -46,7 +46,7 @@ func main() {
 			// delete closed branches
 			if pr.GetState() == "closed" {
 				cmd := exec.Command("git", "show", pr.Head.GetRef())
-				cmd.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				cmd.Dir = godelDir
 				_, err := cmd.Output()
 				if err != nil {
 					continue
@@ -55,13 +55,13 @@ func main() {
 				log.Printf("deleting '%v'", pr.Head.GetRef())
 
 				cmd1 := exec.Command("git", "branch", "-D", pr.Head.GetRef())
-				cmd1.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				cmd1.Dir = godelDir
 				cmd1.Output()
 			}
 
 			if pr.GetState() == "open" {
 				cmd := exec.Command("git", "show", pr.Head.GetRef())
-				cmd.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				cmd.Dir = godelDir
 				_, err := cmd.Output()
 				if err != nil {
 					continue
@@ -70,13 +70,15 @@ func main() {
 				log.Printf("setting PR for '%v'", pr.Head.GetRef())
 
 				cmd1 := exec.Command("twig", "--branch", pr.Head.GetRef(), "issue", strconv.Itoa(pr.GetNumber()))
-				cmd1.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				cmd1.Dir = godelDir
 				cmd1.Output()
 
 				cmd2 := exec.Command("twig", "--branch", pr.Head.GetRef(), "diff-branch", pr.Base.GetRef())
-				cmd2.Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
+				cmd2.Dir = godelDir
 				cmd2.Output()
 			}
 		}
 	}
 }
+
+const godelDir = "/Users/ricky/workspace/src/github.com/vsco/godel"
