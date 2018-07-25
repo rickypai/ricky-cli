@@ -19,6 +19,12 @@ var godelDirs = []string{
 	godel2Dir,
 }
 
+var ghMap = map[string]map[string][]string{
+	"vsco": map[string][]string{
+		"godel": godelDirs,
+	},
+}
+
 func main() {
 	githubToken := os.Getenv("GITHUB_TOKEN")
 	if githubToken == "" {
@@ -33,6 +39,16 @@ func main() {
 
 	client := github.NewClient(tc)
 
+	for user, repoMap := range ghMap {
+		for repo, repoDirs := range repoMap {
+			syncRepo(client, user, repo, repoDirs)
+		}
+	}
+}
+
+func syncRepo(client *github.Client, user, repo string, localDirs []string) {
+	ctx := context.Background()
+
 	opt := github.PullRequestListOptions{
 		State:       "all",
 		ListOptions: github.ListOptions{},
@@ -41,13 +57,13 @@ func main() {
 	for i := 1; i < 20; i++ {
 		opt.ListOptions.Page = i
 
-		prs, _, err := client.PullRequests.List(ctx, "vsco", "godel", &opt)
+		prs, _, err := client.PullRequests.List(ctx, user, repo, &opt)
 		if err != nil {
 			panic(err)
 		}
 
 		for _, pr := range prs {
-			for _, godelDir := range godelDirs {
+			for _, godelDir := range localDirs {
 				syncPR(pr, godelDir)
 			}
 		}
