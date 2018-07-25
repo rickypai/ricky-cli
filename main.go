@@ -22,6 +22,18 @@ var godelDirs = []string{
 var ghMap = map[string]map[string][]string{
 	"vsco": map[string][]string{
 		"godel": godelDirs,
+		"chef": []string{
+			"/Users/ricky/workspace/chef",
+		},
+		"web": []string{
+			"/Users/ricky/workspace/web",
+		},
+		"kube-config": []string{
+			"/Users/ricky/workspace/kube-config",
+		},
+		"titan-grpc": []string{
+			"/Users/ricky/workspace/titan-grpc",
+		},
 	},
 }
 
