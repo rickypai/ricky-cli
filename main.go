@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"sync"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -51,11 +52,19 @@ func main() {
 
 	client := github.NewClient(tc)
 
+	var wg sync.WaitGroup
+
 	for user, repoMap := range ghMap {
 		for repo, repoDirs := range repoMap {
-			syncRepo(client, user, repo, repoDirs)
+			wg.Add(1)
+			go func(user, repo string, repoDirs []string) {
+				defer wg.Done()
+				syncRepo(client, user, repo, repoDirs)
+			}(user, repo, repoDirs)
 		}
 	}
+
+	wg.Wait()
 }
 
 func syncRepo(client *github.Client, user, repo string, localDirs []string) {
