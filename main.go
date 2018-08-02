@@ -14,10 +14,12 @@ import (
 
 const godel1Dir = "/Users/ricky/workspace/src/github.com/vsco/godel"
 const godel2Dir = "/Users/ricky/workspace/src/github.com/vsco/godel2"
+const godel3Dir = "/Users/ricky/workspace/src/github.com/vsco/godel3"
 
 var godelDirs = []string{
 	godel1Dir,
 	godel2Dir,
+	godel3Dir,
 }
 
 var ghMap = map[string]map[string][]string{
