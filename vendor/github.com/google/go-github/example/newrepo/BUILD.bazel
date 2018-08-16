@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importmap = "github.com/rickypai/ricky-cli/vendor/github.com/google/go-github/example/newrepo",
+    importpath = "github.com/google/go-github/example/newrepo",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//vendor/github.com/google/go-github/github:go_default_library",
+        "//vendor/golang.org/x/oauth2:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "newrepo",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
