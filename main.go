@@ -37,6 +37,9 @@ var ghMap = map[string]map[string][]string{
 		"titan-grpc": []string{
 			"/Users/ricky/workspace/titan-grpc",
 		},
+		"infra": []string{
+			"/Users/ricky/workspace/infra",
+		},
 	},
 }
 
