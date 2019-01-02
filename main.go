@@ -22,6 +22,8 @@ var godelDirs = []string{
 	godel3Dir,
 }
 
+const pagesToCheck = 10
+
 var ghMap = map[string]map[string][]string{
 	"vsco": map[string][]string{
 		"godel": godelDirs,
@@ -80,7 +82,7 @@ func syncRepo(client *github.Client, user, repo string, localDirs []string) {
 		ListOptions: github.ListOptions{},
 	}
 
-	for i := 1; i < 20; i++ {
+	for i := 1; i < pagesToCheck; i++ {
 		opt.ListOptions.Page = i
 
 		prs, _, err := client.PullRequests.List(ctx, user, repo, &opt)
