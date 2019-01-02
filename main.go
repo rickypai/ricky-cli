@@ -156,9 +156,8 @@ func execCommandDirs(dirs []string, name string, arg ...string) {
 	}
 }
 
-func execCommand(dir string, name string, arg ...string) error {
+func execCommand(dir string, name string, arg ...string) ([]byte, error) {
 	cmd := exec.Command(name, arg...)
 	cmd.Dir = dir
-	_, err := cmd.Output()
-	return err
+	return cmd.Output()
 }
