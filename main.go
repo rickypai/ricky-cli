@@ -23,7 +23,7 @@ var godelDirs = []string{
 	godel3Dir,
 }
 
-const pagesToCheck = 10
+const pagesToCheck = 3
 
 var ghMap = map[string]map[string][]string{
 	"vsco": map[string][]string{
@@ -78,7 +78,10 @@ func main() {
 func syncRepo(client *github.Client, user, repo string, localDirs []string) {
 	ctx := context.Background()
 
+	trackedMap := make(map[string]map[int]bool)
+
 	for _, localDir := range localDirs {
+		trackedMap[localDir] = make(map[int]bool)
 		issues, _ := trackedIssues(localDir)
 
 		for _, issue := range issues {
@@ -87,6 +90,7 @@ func syncRepo(client *github.Client, user, repo string, localDirs []string) {
 				panic(err)
 			}
 
+			trackedMap[localDir][issue] = true
 			syncPR(pr, localDir, true)
 		}
 	}
@@ -106,7 +110,8 @@ func syncRepo(client *github.Client, user, repo string, localDirs []string) {
 
 		for _, pr := range prs {
 			for _, localDir := range localDirs {
-				syncPR(pr, localDir, false)
+				_, tracked := trackedMap[localDir][pr.GetNumber()]
+				syncPR(pr, localDir, tracked)
 			}
 		}
 	}
