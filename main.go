@@ -91,8 +91,8 @@ func syncRepo(client *github.Client, user, repo string, localDirs []string) {
 		}
 
 		for _, pr := range prs {
-			for _, godelDir := range localDirs {
-				syncPR(pr, godelDir)
+			for _, localDir := range localDirs {
+				syncPR(pr, localDir)
 			}
 		}
 	}
