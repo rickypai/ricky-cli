@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/google/go-github/github"
@@ -77,6 +78,19 @@ func main() {
 func syncRepo(client *github.Client, user, repo string, localDirs []string) {
 	ctx := context.Background()
 
+	for _, localDir := range localDirs {
+		issues, _ := trackedIssues(localDir)
+
+		for _, issue := range issues {
+			pr, _, err := client.PullRequests.Get(ctx, user, repo, issue)
+			if err != nil {
+				panic(err)
+			}
+
+			syncPR(pr, localDir, true)
+		}
+	}
+
 	opt := github.PullRequestListOptions{
 		State:       "all",
 		ListOptions: github.ListOptions{},
@@ -92,13 +106,13 @@ func syncRepo(client *github.Client, user, repo string, localDirs []string) {
 
 		for _, pr := range prs {
 			for _, localDir := range localDirs {
-				syncPR(pr, localDir)
+				syncPR(pr, localDir, false)
 			}
 		}
 	}
 }
 
-func syncPR(pr *github.PullRequest, localDir string) {
+func syncPR(pr *github.PullRequest, localDir string, tracked bool) {
 	if pr.GetUser().GetLogin() != "rickypai" {
 		return
 	}
@@ -109,7 +123,7 @@ func syncPR(pr *github.PullRequest, localDir string) {
 
 	if pr.GetState() == "closed" {
 		syncClosedPR(pr, localDir)
-	} else if pr.GetState() == "open" {
+	} else if pr.GetState() == "open" && !tracked {
 		syncOpenPR(pr, localDir)
 	}
 }
@@ -148,6 +162,36 @@ func syncOpenPR(pr *github.PullRequest, localDir string) {
 		localDir,
 		"twig", "--branch", pr.Head.GetRef(), "diff-branch", pr.Base.GetRef(),
 	)
+}
+
+func trackedIssues(localDir string) ([]int, error) {
+	out, err := execCommand(
+		localDir,
+		"git", "config", "--get-regexp", "branch\\.(.+).\\issue",
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	lines := strings.Split(string(out), "\n")
+
+	issues := make([]int, 0, len(lines))
+
+	for _, line := range lines {
+		tokens := strings.Split(line, " ")
+
+		if len(tokens) == 2 {
+			i, err := strconv.Atoi(tokens[1])
+			if err != nil {
+				continue
+			}
+
+			issues = append(issues, i)
+		}
+	}
+
+	return issues, nil
 }
 
 func execCommandDirs(dirs []string, name string, arg ...string) {
