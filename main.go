@@ -74,9 +74,15 @@ func main() {
 
 	client := github.NewClient(tc)
 
+	syncPRs(client, "all")
+}
+
+func syncPRs(client *github.Client, state string) {
+	ctx := context.Background()
+
 	issues, _, _ := client.Issues.List(ctx, true, &github.IssueListOptions{
 		Filter: "created",
-		State:  "all",
+		State:  state,
 		Sort:   "updated",
 		ListOptions: github.ListOptions{
 			PerPage: 100,
