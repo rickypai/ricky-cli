@@ -152,13 +152,25 @@ func syncClosedPR(pr *github.PullRequest, localDir string) {
 }
 
 func syncOpenPR(pr *github.PullRequest, localDir string) {
-	log.Printf("setting PR for '%v'", pr.Head.GetRef())
-
-	// set GH issue
-	execCommand(
+	issue, _ := execCommand(
 		localDir,
-		"twig", "--branch", pr.Head.GetRef(), "issue", strconv.Itoa(pr.GetNumber()),
+		"twig", "--branch", pr.Head.GetRef(), "issue",
 	)
+
+	issueNum, err := strconv.Atoi(string(strings.TrimSpace(string(issue))))
+	if err != nil {
+		panic(err)
+	}
+
+	if issueNum != pr.GetNumber() {
+		log.Printf("setting PR for '%v'", pr.Head.GetRef())
+
+		// set GH issue
+		execCommand(
+			localDir,
+			"twig", "--branch", pr.Head.GetRef(), "issue", strconv.Itoa(pr.GetNumber()),
+		)
+	}
 
 	// set diff branch
 	execCommand(
