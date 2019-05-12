@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -74,18 +75,29 @@ func main() {
 
 	client := github.NewClient(tc)
 
-	syncPRs(client, "all")
+	wg := sync.WaitGroup{}
+
+	for i := 1; i <= 1; i++ {
+		wg.Add(1)
+		go func(page int) {
+			defer wg.Done()
+			syncPRs(client, page)
+		}(i)
+	}
+
+	wg.Wait()
 }
 
-func syncPRs(client *github.Client, state string) {
+func syncPRs(client *github.Client, page int) {
 	ctx := context.Background()
 
 	issues, _, _ := client.Issues.List(ctx, true, &github.IssueListOptions{
 		Filter: "created",
-		State:  state,
+		State:  "all",
 		Sort:   "updated",
 		ListOptions: github.ListOptions{
 			PerPage: 100,
+			Page:    page,
 		},
 	})
 
@@ -163,10 +175,7 @@ func syncOpenPR(pr *github.PullRequest, localDir string) {
 		"twig", "--branch", pr.Head.GetRef(), "issue",
 	)
 
-	issueNum, err := strconv.Atoi(string(strings.TrimSpace(string(issue))))
-	if err != nil {
-		panic(err)
-	}
+	issueNum, _ := strconv.Atoi(string(strings.TrimSpace(string(issue))))
 
 	if issueNum != pr.GetNumber() {
 		log.Printf("setting PR for '%v'", pr.Head.GetRef())
