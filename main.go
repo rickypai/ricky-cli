@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -75,64 +74,48 @@ func main() {
 
 	client := github.NewClient(tc)
 
-	var wg sync.WaitGroup
+	issues, _, _ := client.Issues.List(ctx, true, &github.IssueListOptions{
+		Filter: "created",
+		State:  "all",
+		Sort:   "updated",
+		ListOptions: github.ListOptions{
+			PerPage: 100,
+		},
+	})
 
-	for user, repoMap := range ghMap {
-		for repo, repoDirs := range repoMap {
-			wg.Add(1)
-			go func(user, repo string, repoDirs []string) {
-				defer wg.Done()
-				syncRepo(client, user, repo, repoDirs)
-			}(user, repo, repoDirs)
+	for _, issue := range issues {
+		if !issue.IsPullRequest() {
+			continue
 		}
-	}
 
-	wg.Wait()
-}
+		// fmt.Printf("%+v\n", issue)
 
-func syncRepo(client *github.Client, user, repo string, localDirs []string) {
-	ctx := context.Background()
+		ownerName := *issue.Repository.Owner.Login
 
-	trackedMap := make(map[string]map[int]bool)
-
-	for _, localDir := range localDirs {
-		trackedMap[localDir] = make(map[int]bool)
-		issues, _ := trackedIssues(localDir)
-
-		for _, issue := range issues {
-			pr, _, err := client.PullRequests.Get(ctx, user, repo, issue)
-			if err != nil {
-				panic(err)
-			}
-
-			trackedMap[localDir][issue] = true
-			syncPR(pr, localDir, true)
+		if _, found := ghMap[ownerName]; !found {
+			continue
 		}
-	}
 
-	opt := github.PullRequestListOptions{
-		State:       "all",
-		ListOptions: github.ListOptions{},
-	}
+		repoName := *issue.Repository.Name
 
-	for i := 1; i < pagesToCheck; i++ {
-		opt.ListOptions.Page = i
+		if _, found := ghMap[ownerName][repoName]; !found {
+			continue
+		}
 
-		prs, _, err := client.PullRequests.List(ctx, user, repo, &opt)
+		localDirs := ghMap[ownerName][repoName]
+
+		pr, _, err := client.PullRequests.Get(ctx, ownerName, repoName, *issue.Number)
 		if err != nil {
 			panic(err)
 		}
 
-		for _, pr := range prs {
-			for _, localDir := range localDirs {
-				_, tracked := trackedMap[localDir][pr.GetNumber()]
-				syncPR(pr, localDir, tracked)
-			}
+		for _, localDir := range localDirs {
+			syncPR(pr, localDir)
 		}
 	}
 }
 
-func syncPR(pr *github.PullRequest, localDir string, tracked bool) {
+func syncPR(pr *github.PullRequest, localDir string) {
 	if pr.GetUser().GetLogin() != "rickypai" {
 		return
 	}
@@ -143,7 +126,7 @@ func syncPR(pr *github.PullRequest, localDir string, tracked bool) {
 
 	if pr.GetState() == "closed" {
 		syncClosedPR(pr, localDir)
-	} else if pr.GetState() == "open" && !tracked {
+	} else if pr.GetState() == "open" {
 		syncOpenPR(pr, localDir)
 	}
 }
