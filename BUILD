@@ -4,7 +4,6 @@ load("@com_github_bazelbuild_buildtools//buildifier:def.bzl", "buildifier")
 
 gazelle(
     name = "gazelle",
-    external = "vendored",
     prefix = "github.com/rickypai/ricky-cli",
 )
 
@@ -18,8 +17,8 @@ go_library(
     importpath = "github.com/rickypai/ricky-cli",
     visibility = ["//visibility:private"],
     deps = [
-        "//vendor/github.com/google/go-github/github:go_default_library",
-        "//vendor/golang.org/x/oauth2:go_default_library",
+        "@com_github_google_go_github//github:go_default_library",
+        "@org_golang_x_oauth2//:go_default_library",
     ],
 )
 

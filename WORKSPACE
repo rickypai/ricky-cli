@@ -24,10 +24,28 @@ go_rules_dependencies()
 
 go_register_toolchains()
 
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 gazelle_dependencies()
 
 load("@com_github_bazelbuild_buildtools//buildifier:deps.bzl", "buildifier_dependencies")
 
 buildifier_dependencies()
+
+go_repository(
+    name = "org_golang_x_oauth2",
+    commit = "9f3314589c9a9136388751d9adae6b0ed400978a",
+    importpath = "golang.org/x/oauth2",
+)
+
+go_repository(
+    name = "com_github_google_go_github",
+    commit = "2680886eeed75abb99132edfa256066dd05d65c9",
+    importpath = "github.com/google/go-github",
+)
+
+go_repository(
+    name = "com_github_google_go_querystring",
+    commit = "c8c88dbee036db4e4808d1f2ec8c2e15e11c3f80",
+    importpath = "github.com/google/go-querystring",
+)
