@@ -43,6 +43,21 @@ var ghMap = map[string]map[string][]string{
 		"infra": []string{
 			"/Users/ricky/workspace/infra",
 		},
+		"rules_protobuf": []string{
+			"/Users/ricky/workspace/rules_protobuf_vsco",
+		},
+		"jvm": []string{
+			"/Users/ricky/workspace/jvm",
+		},
+		"js": []string{
+			"/Users/ricky/workspace/js",
+		},
+		"uni": []string{
+			"/Users/ricky/workspace/uni",
+		},
+		"vsco-cli": []string{
+			"/Users/ricky/workspace/src/github.com/vsco/vsco-cli",
+		},
 	},
 }
 
