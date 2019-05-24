@@ -77,7 +77,7 @@ func main() {
 
 	wg := sync.WaitGroup{}
 
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= 3; i++ {
 		wg.Add(1)
 		go func(page int) {
 			defer wg.Done()
@@ -96,7 +96,7 @@ func syncPRs(client *github.Client, page int) {
 		State:  "all",
 		Sort:   "updated",
 		ListOptions: github.ListOptions{
-			PerPage: 100,
+			PerPage: 20,
 			Page:    page,
 		},
 	})
