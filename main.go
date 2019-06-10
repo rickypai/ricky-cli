@@ -192,6 +192,20 @@ func syncOpenPR(pr *github.PullRequest, localDir string) {
 		localDir,
 		"twig", "--branch", pr.Head.GetRef(), "diff-branch", pr.Base.GetRef(),
 	)
+
+	if pr.Mergeable != nil && *pr.Mergeable == false {
+		// set needs-rebase
+		execCommand(
+			localDir,
+			"twig", "--branch", pr.Head.GetRef(), "needs-rebase", "true",
+		)
+	}
+
+	// unset needs-rebase
+	execCommand(
+		localDir,
+		"twig", "--branch", pr.Head.GetRef(), "--unset", "needs-rebase",
+	)
 }
 
 func trackedIssues(localDir string) ([]int, error) {
