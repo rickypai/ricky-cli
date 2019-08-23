@@ -31,6 +31,9 @@ var ghMap = map[string]map[string][]string{
 		"chef": []string{
 			"/Users/ricky/workspace/chef",
 		},
+		"android": []string{
+			"/Users/ricky/workspace/android",
+		},
 		"web": []string{
 			"/Users/ricky/workspace/web",
 		},
