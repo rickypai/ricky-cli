@@ -58,7 +58,7 @@ var ghMap = map[string]map[string][]string{
 		"uni": []string{
 			"/Users/ricky/workspace/uni",
 		},
-		"vsco-cli": []string{
+		"infra-tools": []string{
 			"/Users/ricky/workspace/src/github.com/vsco/vsco-cli",
 		},
 	},
