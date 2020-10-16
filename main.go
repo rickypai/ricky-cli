@@ -26,42 +26,7 @@ var godelDirs = []string{
 const pagesToCheck = 3
 
 var ghMap = map[string]map[string][]string{
-	"vsco": map[string][]string{
-		"godel": godelDirs,
-		"chef": []string{
-			"/Users/ricky/workspace/chef",
-		},
-		"android": []string{
-			"/Users/ricky/workspace/android",
-		},
-		"web": []string{
-			"/Users/ricky/workspace/web",
-		},
-		"kube-config": []string{
-			"/Users/ricky/workspace/kube-config",
-		},
-		"titan-grpc": []string{
-			"/Users/ricky/workspace/titan-grpc",
-		},
-		"infra": []string{
-			"/Users/ricky/workspace/infra",
-		},
-		"rules_protobuf": []string{
-			"/Users/ricky/workspace/rules_protobuf_vsco",
-		},
-		"jvm": []string{
-			"/Users/ricky/workspace/jvm",
-		},
-		"js": []string{
-			"/Users/ricky/workspace/js",
-		},
-		"uni": []string{
-			"/Users/ricky/workspace/uni",
-		},
-		"infra-tools": []string{
-			"/Users/ricky/workspace/src/github.com/vsco/vsco-cli",
-		},
-	},
+	{},
 }
 
 func main() {
