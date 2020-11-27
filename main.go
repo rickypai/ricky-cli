@@ -16,7 +16,12 @@ import (
 const pagesToCheck = 3
 
 var ghMap = map[string]map[string][]string{
-	"": nil,
+	"block-party-studio-company": map[string][]string{
+		"block-party": []string{
+			"/home/rickypai/workspace/block-party",
+			"/mnt/t/workspace/block-party",
+		},
+	},
 }
 
 func main() {
