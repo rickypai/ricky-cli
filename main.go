@@ -20,6 +20,7 @@ var ghMap = map[string]map[string][]string{
 		"block-party": []string{
 			"/home/rickypai/workspace/block-party",
 			"/mnt/t/workspace/block-party",
+			"/Users/rickypai/workspace/block-party",
 		},
 	},
 }
