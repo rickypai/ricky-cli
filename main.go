@@ -16,11 +16,11 @@ import (
 const pagesToCheck = 3
 
 var ghMap = map[string]map[string][]string{
-	"block-party-studio-company": map[string][]string{
-		"block-party": []string{
-			"/home/rickypai/workspace/block-party",
-			"/mnt/t/workspace/block-party",
-			"/Users/rickypai/workspace/block-party",
+	"rickypai": {
+		"web-template": {
+			"/home/rickypai/workspace/web-template",
+			"/mnt/t/workspace/web-template",
+			"/Users/rickypai/workspace/web-template",
 		},
 	},
 }
