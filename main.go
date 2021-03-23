@@ -22,6 +22,10 @@ var ghMap = map[string]map[string][]string{
 			"/mnt/t/workspace/web-template",
 			"/Users/rickypai/workspace/web-template",
 		},
+		"rickysdc": {
+			"/home/rickypai/workspace/rickysdc",
+			"/Users/rickypai/workspace/rickysdc",
+		},
 	},
 }
 
